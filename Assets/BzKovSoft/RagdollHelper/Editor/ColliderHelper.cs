@@ -144,7 +144,7 @@ namespace BzKovSoft.RagdollHelper.Editor
 			rotatorTransform = colliderRotator.transform;
 
 			ReattachCollider(boneTransform.gameObject, colliderRotator);
-			rotatorTransform.parent = boneTransform;
+			Undo.SetTransformParent(rotatorTransform, boneTransform, "Set collider parrent");
 			rotatorTransform.localPosition = Vector3.zero;
 			rotatorTransform.localRotation = Quaternion.identity;
 			rotatorTransform.localScale = Vector3.one;
@@ -163,7 +163,7 @@ namespace BzKovSoft.RagdollHelper.Editor
 			Collider newCollider;
 			if (cCollider != null)
 			{
-				CapsuleCollider newCapsuleCollider = to.AddComponent<CapsuleCollider>();
+				CapsuleCollider newCapsuleCollider = Undo.AddComponent<CapsuleCollider>(to);
 				newCollider = newCapsuleCollider;
 				newCapsuleCollider.direction = cCollider.direction;
 				newCapsuleCollider.radius = cCollider.radius;
@@ -172,7 +172,7 @@ namespace BzKovSoft.RagdollHelper.Editor
 			}
 			else if (bCollider != null)
 			{
-				BoxCollider newBoxCollider = to.AddComponent<BoxCollider>();
+				BoxCollider newBoxCollider = Undo.AddComponent<BoxCollider>(to);
 				newCollider = newBoxCollider;
 				newBoxCollider.size = bCollider.size;
 				newBoxCollider.center = bCollider.center;

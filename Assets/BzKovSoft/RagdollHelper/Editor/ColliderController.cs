@@ -13,7 +13,7 @@ namespace BzKovSoft.RagdollHelper.Editor
 			switch (Tools.current)
 			{
 				case Tool.Rotate:
-					ProcessRotation(boneHelper, rotatorRotation, lastRotation, transform, pos);
+					ProcessRotation(rotatorRotation, lastRotation, transform, pos);
 					break;
 				case Tool.Move:
 					ProcessColliderMove(rotatorRotation, transform, pos);
@@ -27,7 +27,7 @@ namespace BzKovSoft.RagdollHelper.Editor
 		/// <summary>
 		/// Rotate node's colider though controls
 		/// </summary>
-		static void ProcessRotation(BoneHelper boneHelper, Quaternion rotatorRotation, Quaternion lastRotation, Transform transform, Vector3 pos)
+		static void ProcessRotation(Quaternion rotatorRotation, Quaternion lastRotation, Transform transform, Vector3 pos)
 		{
 			Quaternion newRotation;
 			bool changed;
