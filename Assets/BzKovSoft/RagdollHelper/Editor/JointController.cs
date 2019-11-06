@@ -14,14 +14,23 @@ namespace BzKovSoft.RagdollHelper.Editor
 		/// Draws the controllers. Need to be invoked from 'OnSceneGUI()' method.
 		/// </summary>
 		/// <param name="joint">Joint.</param>
-		public static void DrawControllers(Transform transform)
+		public static void DrawControllers(BoneHelper boneHelper, Transform transform)
 		{
 			CharacterJoint joint = transform.GetComponent<CharacterJoint>();
 			if (joint == null)
 				return;
 
-
 			Undo.RecordObject(joint, "Set Joint");
+			CharacterJoint symJoint = null;
+			Transform symBone;
+			if (boneHelper.SymmetricBones != null && boneHelper.SymmetricBones.TryGetValue(transform.name, out symBone))
+			{
+				symJoint = symBone.GetComponent<CharacterJoint>();
+				if (symJoint == null)
+					return;
+
+				Undo.RecordObject(symJoint, "Setup symetric joint");
+			}
 
 			Color backupColor = Handles.color;
 			Vector3 position = joint.transform.position + joint.anchor;
@@ -30,9 +39,9 @@ namespace BzKovSoft.RagdollHelper.Editor
 			Vector3 axisDir = joint.transform.TransformDirection(joint.axis).normalized;			// yellow
 			Vector3 direction = GetDirection(joint, swingAxisDir, axisDir);
 
-			DrawTwist(joint, position, direction, axisDir, size);
-			DrawSwing1(joint, position, direction, axisDir, swingAxisDir, size);
-			DrawSwing2(joint, position, direction, swingAxisDir, size);
+			DrawTwist(joint, symJoint, position, direction, axisDir, size);
+			DrawSwing1(joint, symJoint, position, direction, axisDir, swingAxisDir, size);
+			DrawSwing2(joint, symJoint, position, direction, swingAxisDir, size);
 
 			var currRot = Quaternion.LookRotation(swingAxisDir, axisDir);
 			Quaternion newRotation = Handles.RotationHandle(currRot, position);
@@ -41,42 +50,48 @@ namespace BzKovSoft.RagdollHelper.Editor
 			joint.swingAxis = joint.transform.InverseTransformDirection(newRotation * Vector3.forward);	// green
 			joint.axis = joint.transform.InverseTransformDirection(newRotation * Vector3.up);           // yellow
 
-
-
 			Handles.color = backupColor;
 		}
 
-		static void DrawTwist(CharacterJoint joint, Vector3 position, Vector3 direction, Vector3 axisDir, float size)
+		static void DrawTwist(CharacterJoint joint, CharacterJoint symJoint, Vector3 position, Vector3 direction, Vector3 axisDir, float size)
 		{
 			Handles.color = new Color(0.7f, 0.7f, 0.0f, 1f);
 			Handles.ArrowHandleCap(0, position, Quaternion.LookRotation(axisDir), size * 1.1f, EventType.Repaint);
 
 			Handles.color = new Color(0.7f, 0.7f, 0.0f, 1f);
 			Vector3 twistNoraml = axisDir;
-			var hightLimit = joint.highTwistLimit;
+			var highLimit = joint.highTwistLimit;
 			var lowLimit = joint.lowTwistLimit;
 
-			float newHightLimit = hightLimit.limit;
+			float newHightLimit = highLimit.limit;
 			float newLowLimit = lowLimit.limit;
 
 			newHightLimit = -ProcessLimit(position, twistNoraml, direction, size, -newHightLimit);
 			newLowLimit = -ProcessLimit(position, twistNoraml, direction, size, -newLowLimit);
 
 
-			if (hightLimit.limit != newHightLimit)
+			if (highLimit.limit != newHightLimit)
 			{
-				hightLimit.limit = newHightLimit;
-				joint.highTwistLimit = hightLimit;
+				highLimit.limit = newHightLimit;
+				joint.highTwistLimit = highLimit;
+				if (symJoint != null)
+				{
+					symJoint.highTwistLimit = highLimit;
+				}
 			}
 
 			if (lowLimit.limit != newLowLimit)
 			{
 				lowLimit.limit = newLowLimit;
 				joint.lowTwistLimit = lowLimit;
+				if (symJoint != null)
+				{
+					symJoint.lowTwistLimit = lowLimit;
+				}
 			}
 		}
 
-		static void DrawSwing1(CharacterJoint joint, Vector3 position, Vector3 direction, Vector3 axisDir, Vector3 swingAxisDir, float size)
+		static void DrawSwing1(CharacterJoint joint, CharacterJoint symJoint, Vector3 position, Vector3 direction, Vector3 axisDir, Vector3 swingAxisDir, float size)
 		{
 			Handles.color = new Color(0.0f, 0.7f, 0.0f, 1f);
 			Handles.ArrowHandleCap(0, position, Quaternion.LookRotation(swingAxisDir), size * 1.1f, EventType.Repaint);
@@ -95,10 +110,14 @@ namespace BzKovSoft.RagdollHelper.Editor
 			{
 				swing1Limit.limit = newLimit;
 				joint.swing1Limit = swing1Limit;
+				if (symJoint != null)
+				{
+					symJoint.swing1Limit = swing1Limit;
+				}
 			}
 		}
 
-		static void DrawSwing2(CharacterJoint joint, Vector3 position, Vector3 direction, Vector3 swingAxisDir, float size)
+		static void DrawSwing2(CharacterJoint joint, CharacterJoint symJoint, Vector3 position, Vector3 direction, Vector3 swingAxisDir, float size)
 		{
 			Handles.color = new Color(1f, 0f, 0f, 1f);
 			Handles.ArrowHandleCap(0, position, Quaternion.LookRotation(direction), size * 2f, EventType.Repaint);
@@ -117,6 +136,10 @@ namespace BzKovSoft.RagdollHelper.Editor
 			{
 				swing2Limit.limit = newLimit;
 				joint.swing2Limit = swing2Limit;
+				if (symJoint != null)
+				{
+					symJoint.swing2Limit = swing2Limit;
+				}
 			}
 		}
 

@@ -309,7 +309,7 @@ namespace BzKovSoft.RagdollHelper.Editor
 						ColliderController.DrawControllers(this, _lastRotation, transform, pos);
 						break;
 					case SelectedMode.Joints:
-						JointController.DrawControllers(transform);
+						JointController.DrawControllers(this, transform);
 						break;
 					case SelectedMode.CenterOfMass:
 						RigidController.DrawControllers(transform);
