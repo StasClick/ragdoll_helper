@@ -186,7 +186,8 @@ namespace BzKovSoft.RagdollHelper.Editor
 			ConfigureJointLimits(chestJoint, -45f, 20f, 20f, 20f);
 
 			// head
-			_head.collider.radius = 0.1f;
+			float headScale = 3f / (_head.transform.lossyScale.x + _head.transform.lossyScale.y + _head.transform.lossyScale.z);
+			_head.collider.radius = 0.1f * headScale;
 			_head.collider.center = _head.transform.InverseTransformVector(new Vector3(0f, 0.09f, 0.03f));
 			var headJoint = _head.joint;
 			ConfigureJointParams(_head, _chest.rigidbody, _rootNode.right, _rootNode.forward);

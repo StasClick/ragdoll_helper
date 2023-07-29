@@ -81,6 +81,7 @@ namespace BzKovSoft.RagdollHelper.Editor
 			BoxCollider bCollider = collider as BoxCollider;
 			SphereCollider sCollider = collider as SphereCollider;
 
+			float scale = (collider.transform.lossyScale.x + collider.transform.lossyScale.y + collider.transform.lossyScale.z) / 3f;
 			if (cCollider != null)
 			{
 				// for capsule collider draw circle and two dot controllers
@@ -97,7 +98,6 @@ namespace BzKovSoft.RagdollHelper.Editor
 
 				// draw radius controll
 
-				float scale = (cCollider.transform.lossyScale.x + cCollider.transform.lossyScale.y + cCollider.transform.lossyScale.z) / 3f;
 				float radius = Handles.ScaleValueHandle(cCollider.radius, pos, t, cCollider.radius * magicNumber * scale, Handles.CircleHandleCap, 0);
 				bool radiusChanged = cCollider.radius != radius;
 
@@ -191,11 +191,12 @@ namespace BzKovSoft.RagdollHelper.Editor
 			else if (sCollider != null)
 			{
 				// resize Sphere collider
-				var newRadius = Handles.RadiusHandle(rotatorRotation, pos, sCollider.radius, true);
-				if (sCollider.radius != newRadius)
+				float radius = sCollider.radius * scale;
+				var newRadius = Handles.RadiusHandle(rotatorRotation, pos, radius, true);
+				if (radius != newRadius)
 				{
 					Undo.RecordObject(sCollider, "Resize sphere collider");
-					sCollider.radius = newRadius;
+					sCollider.radius = newRadius / scale;
 				}
 			}
 			else
