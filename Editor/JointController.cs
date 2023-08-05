@@ -231,7 +231,11 @@ namespace BzKovSoft.RagdollHelper.Editor
 			newColor.a = 1f;
 			Handles.color = newColor;
 
+#if UNITY_2022_1_OR_NEWER
 			bool positionChanged = Handles.FreeMoveHandle(controllerPos, size * 0.1f, Vector3.zero, Handles.SphereHandleCap) != controllerPos;
+#else
+			bool positionChanged = Handles.FreeMoveHandle(controllerPos, Quaternion.identity, size * 0.1f, Vector3.zero, Handles.SphereHandleCap) != controllerPos;
+#endif
 			if (positionChanged)
 			{
 				var ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
