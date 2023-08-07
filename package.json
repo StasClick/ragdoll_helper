@@ -1,8 +1,9 @@
 {
   "name": "bz-soft.ragdoll-helper",
   "displayName": "Ragdoll Helper",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "unity": "2019.4",
   "description": "Ragdoll helper",
+  "documentationUrl": "https://docs.google.com/document/d/18Humy2lIKUQ6uM_dKbet6Ig12RcI6M2D2XWjD4L-NpQ/edit?usp=sharing",
   "type": "tool"
 }
